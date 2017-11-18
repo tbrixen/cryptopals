@@ -11,7 +11,10 @@ def xorEqualSizeInts(plaintext, key):
     return plaintext ^ key
 
 def getHexStringFromInt(input):
-    return hex(input)[2:-1]
+    res = hex(input)[2:-1]
+    if len(res) % 2 != 0:
+        res = "0" + res
+    return res
 
 def getIntFromHex(hexx):
     return int(hexx, 16)
@@ -23,7 +26,7 @@ def expand_key(key, length):
 def xor(plaintext, key):
     expanded_key = expand_key(key, len(plaintext))
     xored = getIntFromHex(plaintext.encode('hex')) ^ getIntFromHex(expanded_key.encode('hex'))
-    return "0" + getHexStringFromInt(xored)
+    return getHexStringFromInt(xored)
 
 if __name__ == "__main__":
     result = xor(TEXT_TO_ENCRYPT, KEY)
