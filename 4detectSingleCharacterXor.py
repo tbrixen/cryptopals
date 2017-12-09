@@ -48,7 +48,7 @@ if __name__ == "__main__":
     bestScore = 0
     winningChar = 0
     probablyTheString = ""
-    with open ('4.txt') as f:
+    with open ('4detectSingleCharacterXor.txt') as f:
         for line in f:
             print "Trying: " + line
             for c in range(255):

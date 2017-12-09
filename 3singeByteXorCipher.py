@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from bitstring import Bits, BitArray, BitStream
+from bitstring import Bits, BitArray, BitStream, ConstBitStream
 
 def xorWith(source, char):
     res = BitStream()
@@ -11,6 +11,7 @@ def xorWith(source, char):
         nextBits = source.read(8)
         res.append(nextBits ^ key)
 
+    source.pos = 0
     return res
 
 def englishScore(source):
@@ -44,17 +45,27 @@ def englishScore(source):
 def numberOfChars(source, char):
     return len(list(source.findall(hex(ord(char)), bytealigned=True)))
 
-if __name__ == "__main__":
+def getMostLikelyChar(encrypted):
     bestScore = 0
     winningChar = 0
     for c in range(255):
-        encrypted = BitStream(hex='1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736')
         decrypted = xorWith(encrypted, c)
         curr_score = englishScore(decrypted)
         if curr_score > bestScore:
             bestScore = curr_score
             winningChar = c
 
-    encrypted = BitStream(hex='1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736')
-    print "Maybe this is the solution using char %d: " % winningChar
-    print xorWith(encrypted, winningChar).bytes
+    return winningChar
+
+def breakSingleKeyXor(input):
+    winningChar = getMostLikelyChar(encrypted)
+
+    #print "Maybe this is the solution using char %d: " % winningChar
+    return xorWith(encrypted, winningChar)
+
+
+
+if __name__ == "__main__":
+    encrypted = ConstBitStream(hex='1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736')
+
+    print breakSingleKeyXor(encrypted).bytes
