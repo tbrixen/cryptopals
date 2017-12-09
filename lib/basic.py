@@ -1,4 +1,5 @@
 from bitstring import Bits, BitStream
+
 def xor(a, b):
     if a.len != b.len:
         raise BaseException("Cannot XOR bitstrings of unequal length. Lengths was %d and %d" % (a.len, b.len))
@@ -18,4 +19,9 @@ def expandKeyAndXor(data, key):
 def expandKey(key, length):
     atLeast = (length / len(key)) + 1
     return (key*atLeast)[:length]
+
+def countCharsIgnoreCase(source, char):
+    a = source.bytes.count(char)
+    b = source.bytes.count(char.swapcase())
+    return  a + b
 

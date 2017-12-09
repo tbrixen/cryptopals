@@ -1,5 +1,5 @@
 import unittest
-from basic import xor, expandKey, expandKeyAndXor
+from basic import xor, expandKey, expandKeyAndXor, countCharsIgnoreCase
 from bitstring import Bits, BitStream
 
 class TestUM(unittest.TestCase):
@@ -24,6 +24,31 @@ class TestUM(unittest.TestCase):
         result = expandKeyAndXor(Bits('0b11001100'), Bits('0b110'))
         self.assertEquals(result, Bits('0b00010111'))
         self.assertIs(result.pos, 0)
+
+    def test_count_chars_ignore_case_in_string_upper_case(self):
+        haystack = Bits(bytes="anadsgGfAbf")
+        result = countCharsIgnoreCase(haystack, 'A');
+        self.assertIs(result, 3)
+
+    def test_count_chars_ignore_case_in_string_lower_case(self):
+        haystack = Bits(bytes="anadsgGfAbf")
+        result = countCharsIgnoreCase(haystack, 'a');
+        self.assertIs(result, 3)
+
+    def test_count_chars_ignore_case_in_string_no_match(self):
+        haystack = Bits(bytes="aaaa")
+        result = countCharsIgnoreCase(haystack, 'w');
+        self.assertIs(result, 0)
+
+    def test_count_chars_ignore_case_in_string_without_printable_char(self):
+        haystack = Bits(hex="0x0010181f")
+        result = countCharsIgnoreCase(haystack, 'a');
+        self.assertIs(result, 0)
+
+    def test_count_chars_ignore_case_in_string_mixed_printable_char(self):
+        haystack = Bits(hex="0x00611018411f")
+        result = countCharsIgnoreCase(haystack, 'a');
+        self.assertIs(result, 2)
 
 if __name__ == '__main__':
     unittest.main()
