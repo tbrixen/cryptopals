@@ -1,5 +1,5 @@
 import unittest
-from basic import xor, expandKey, expandKeyAndXor, countCharsIgnoreCase
+from basic import xor, expandKey, expandKeyAndXor, countCharsIgnoreCase, guessKeyForSingleByteXor
 from bitstring import Bits, BitStream
 
 class TestUM(unittest.TestCase):
@@ -49,6 +49,16 @@ class TestUM(unittest.TestCase):
         haystack = Bits(hex="0x00611018411f")
         result = countCharsIgnoreCase(haystack, 'a');
         self.assertIs(result, 2)
+
+    def test_guess_key_for_single_byte_xor(self):
+        text = Bits(bytes='Hello this is some english text')
+        result = guessKeyForSingleByteXor(text)
+        self.assertIs(result.int, 0)
+
+    def test_guess_key_for_single_byte_xor_shifted(self):
+        text = Bits(bytes='Hello this is some english text')
+        result = guessKeyForSingleByteXor(expandKeyAndXor(text, Bits(hex="10")))
+        self.assertIs(result.int, 16)
 
 if __name__ == '__main__':
     unittest.main()
