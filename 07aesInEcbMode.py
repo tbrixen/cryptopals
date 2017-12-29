@@ -5,7 +5,7 @@ def main():
     key = ConstBitStream(bytes="YELLOW SUBMARINE")
 
     base64encoded = ""
-    f = open("07AESinECBmode.encrypted")
+    f = open("07aesInECBmode.encrypted")
     for line in f.read().split('\n'):
         base64encoded += line
     f.close()
