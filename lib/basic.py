@@ -20,10 +20,40 @@ def expandKey(key, length):
     atLeast = (length / len(key)) + 1
     return (key*atLeast)[:length]
 
+def canReadNextByte(data):
+    return data.pos + 8 <= data.len
+
+def canReadNextBytes(data, nBytes):
+    return data.pos + nBytes*8 <= data.len
+
 def countCharsIgnoreCase(source, char):
     a = source.bytes.count(char)
     b = source.bytes.count(char.swapcase())
-    return  a + b
+    return a + b
+
+def hammingDistance(a, b):
+    return (a ^ b).count(1)
+
+def readEveryXByte(data, x):
+    result = BitStream()
+    if not canReadNextByte(data):
+        return result
+
+    result.append(data.read(8))
+    while canReadNextBytes(data, x):
+        data.read((x-1)*8)
+        result.append(data.read(8))
+
+    return result
+
+def readFromOffsetAndWithDistance(offset, blockSize, input):
+    input.pos = offset*8
+    firstBytesOfEachBlock = BitArray()
+    while canReadNextBytes(input, blockSize):
+        firstByteOfBlock = input.read(blockSize*8).read(8)
+        firstBytesOfEachBlock.append(firstByteOfBlock)
+
+    return ConstBitStream(firstBytesOfEachBlock)
 
 def englishScore(source):
     # Chars taken from the first two groups from studi made by Beker and
@@ -42,8 +72,24 @@ def englishScore(source):
         'N': 67,
         'S': 63,
         'H': 61,
-        'R': 60
+        'R': 60,
+        'D': 43,
+        'L': 40,
+        'U': 28,
+        'M': 24,
+        'W': 24,
+        'F': 22,
+        'Y': 20,
+        'G': 20,
+        'P': 19,
+        'B': 15,
+        'V': 10,
+        'K': 8,
+        'X': 2,
+        'J': 2,
+        'Q': 1
     }
+
     for char, points in scoreMap.iteritems():
         score += countCharsIgnoreCase(source, char) * points
 

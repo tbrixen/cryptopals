@@ -1,5 +1,5 @@
 import unittest
-from basic import xor, expandKey, expandKeyAndXor, countCharsIgnoreCase, guessKeyForSingleByteXor
+from basic import xor, expandKey, expandKeyAndXor, countCharsIgnoreCase, guessKeyForSingleByteXor, hammingDistance, canReadNextByte, canReadNextBytes, readEveryXByte
 from bitstring import Bits, BitStream
 
 class TestUM(unittest.TestCase):
@@ -59,6 +59,66 @@ class TestUM(unittest.TestCase):
         text = Bits(bytes='Hello this is some english text')
         result = guessKeyForSingleByteXor(expandKeyAndXor(text, Bits(hex="10")))
         self.assertIs(result.int, 16)
+
+    def test_hamming_distance(self):
+        a = BitStream(bytes="this is a test")
+        b = BitStream(bytes="wokka wokka!!!")
+        result = hammingDistance(a, b)
+        self.assertIs(result, 37)
+
+    def test_can_read_next_byte(self):
+        data = BitStream(hex='00')
+        self.assertTrue(canReadNextByte(data))
+
+    def test_can_read_next_byte_one_off(self):
+        data = BitStream(hex='00')
+        data.pos = 1
+        self.assertFalse(canReadNextByte(data))
+
+    def test_can_read_next_byte_on_empty_stream(self):
+        data = BitStream()
+        self.assertFalse(canReadNextByte(data))
+
+    def test_can_read_next_zero_bytes(self):
+        data = BitStream()
+        self.assertTrue(canReadNextBytes(data, 0))
+
+    def test_can_read_next_single_byte(self):
+        data = BitStream(hex='41')
+        self.assertTrue(canReadNextBytes(data, 1))
+
+    def test_can_read_next_single_byte_fails(self):
+        data = BitStream()
+        self.assertFalse(canReadNextBytes(data, 1))
+
+    def test_can_read_next_multiple_byte_fails(self):
+        data = BitStream(hex='41')
+        self.assertFalse(canReadNextBytes(data, 2))
+
+    def test_can_read_next_multiple_byte(self):
+        data = BitStream(hex='4142')
+        self.assertTrue(canReadNextBytes(data, 2))
+
+    def test_can_read_next_multiple_byte_off_by_one(self):
+        data = BitStream(hex='4142')
+        data.pos = 1
+        self.assertFalse(canReadNextBytes(data, 2))
+
+    def test_read_every_x_bytes_of_empty_source(self):
+        data = BitStream()
+        result = readEveryXByte(data, 1)
+        self.assertIs(result.len, 0)
+
+    def test_read_every_1_bytes(self):
+        data = BitStream(hex="010203")
+        result = readEveryXByte(data, 1)
+        self.assertEquals(result, BitStream(hex="010203"))
+
+    def test_read_every_2_bytes(self):
+        data = BitStream(hex="010203")
+        result = readEveryXByte(data, 2)
+        self.assertEquals(result, BitStream(hex="0103"))
+
 
 if __name__ == '__main__':
     unittest.main()
