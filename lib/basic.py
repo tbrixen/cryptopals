@@ -1,3 +1,4 @@
+from Crypto.Cipher import AES
 from bitstring import Bits, BitStream
 
 def xor(a, b):
@@ -106,4 +107,20 @@ def guessKeyForSingleByteXor(encrypted):
     highestScore = sorted(scoreMap, reverse=True)[0]
 
     return scoreMap[highestScore]
+
+def decrypt_aes_ecb(key, data):
+    if key.length is not 128:
+        raise ValueError("Key is not 128 bits. Input key size: %d bits" % key.length)
+    if data.length % 128:
+        raise ValueError("Data is not a multiple of 16 bytes. Data is %d bits", data.length)
+
+    cipher = AES.new(key.bytes, AES.MODE_ECB)
+
+    result = BitStream()
+    while canReadNextBytes(data, 16):
+        nextBytes = data.read(16*8)
+        decrypted = cipher.decrypt(nextBytes.bytes)
+        result += Bits(bytes=decrypted)
+
+    return result
 
