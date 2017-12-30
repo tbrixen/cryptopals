@@ -2,10 +2,12 @@ from lib.basic import canReadNextBytes, decrypt_aes_ecb
 from bitstring import ConstBitStream
 from collections import defaultdict
 
-def ecb_score(data):
+def ecb_score(bitstring):
+    """ From bitstring (ConstBitStream) compute a score of the probablity of it
+    being ecb encrypted with blocks of size 128 """
     counter = defaultdict(int)
-    while canReadNextBytes(data, 16):
-        nextBytes = data.read(16 * 8)
+    while canReadNextBytes(bitstring, 16):
+        nextBytes = bitstring.read(16 * 8)
         counter[nextBytes] += 1
 
     total = 0
@@ -13,20 +15,18 @@ def ecb_score(data):
         total += 2 ** count
     return total
 
-def find_most_probable_ecb_encrypted(data):
-    data_to_score_map = {}
-    for encrypted_value in data:
-        score = ecb_score(encrypted_value)
-        data_to_score_map[encrypted_value] = score
+def find_most_probable_ecb_encrypted(bitstring_list):
+    """ From list of ConstBitStreams find the BitStrem with most repeating 128
+    bits sequences """
+    mostProbableData = ConstBitStream()
+    highScore = 0
+    for encryptedValue in bitstring_list:
+        score = ecb_score(encryptedValue)
+        if score > highScore:
+            highScore = score
+            mostProbableData = encryptedValue
 
-    bestScore = 0
-    bestData = ConstBitStream()
-    for encrypted_value, count in data_to_score_map.items():
-        if count > bestScore:
-            bestScore = count
-            bestData = encrypted_value
-
-    return bestData
+    return mostProbableData
 
 def main():
     data = list()
