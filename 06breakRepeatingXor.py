@@ -10,15 +10,12 @@ def break_cipher(input):
     keySizes = guessKeySizes(input)
     print keySizes
 
-    keySizes = {29}
-
     for keySize in keySizes:
         input.pos = 0
         print "Trying keysize:", keySize
 
         key = BitStream()
         for pos in range(0, keySize):
-            print "Guessing at pos", pos
             bytesToDecrypt = readFromOffsetAndWithDistance(pos, keySize, input)
             mostProbableKey = guessKeyForSingleByteXor(bytesToDecrypt)
             key.append(mostProbableKey)

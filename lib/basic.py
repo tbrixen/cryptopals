@@ -9,16 +9,12 @@ def expandKeyAndXor(data, key):
     data = BitStream(data)
     key = BitStream(key)
     key = expandKey(key, data.length)
-    res = BitStream()
-
-    while key.pos + 8 <= key.length:
-        res.append(xor(data.read(8), key.read(8)))
-
-    return res
+    return data ^ key
 
 def expandKey(key, length):
+    k = key.bytes
     atLeast = (length / len(key)) + 1
-    return (key*atLeast)[:length]
+    return (BitStream(bytes=k*atLeast))[:length]
 
 def canReadNextByte(data):
     return data.pos + 8 <= data.len
@@ -62,61 +58,6 @@ def englishScore(source):
     # that if I saw an 'e' there was a higher probability that if I saw an 'r'.
     # Also see https://en.wikipedia.org/wiki/Etaoin_shrdlu
     score = 0
-    #scoreMap = {
-    #    ' ': 1000,
-    #    'E': 1202,
-    #    'T': 910,
-    #    'A': 812,
-    #    'O': 768,
-    #    'I': 731,
-    #    'N': 695,
-    #    'S': 628,
-    #    'R': 602,
-    #    'H': 592,
-    #    'D': 432,
-    #    'L': 398,
-    #    'U': 288,
-    #    'C': 271,
-    #    'M': 271,
-    #    'F': 230,
-    #    'Y': 211,
-    #    'W': 209,
-    #    'G': 203,
-    #    'P': 182,
-    #    'B': 149,
-    #    'V': 111,
-    #    'K': 69,
-    #    'X': 17,
-    #    'Q': 11,
-    #    'J': 10,
-    #    'Z': 7,
-    #    '?': 5,
-    #    '/': 5,
-    #    '!': 5,
-    #    '"': 5,
-    #    ',': 20,
-    #    '.': 20,
-    #    '\x00': -1000,
-    #    '\x01': -1000,
-    #    '\x02': -1000,
-    #    '\x03': -1000,
-    #    '\x04': -1000,
-    #    '\x05': -1000,
-    #    '\x06': -1000,
-    #    '\x07': -1000,
-    #    '\x08': -1000,
-    #    '\x09': -1000,
-    #    '\x10': -1000,
-    #    '\x11': -1000,
-    #    '\x12': -1000,
-    #    '\x13': -1000,
-    #    '\x14': -1000,
-    #    '\x15': -1000,
-    #    '\x16': -1000,
-    #    '\x17': -1000,
-    #    '\x18': -1000,
-    #    '\x19': -1000,
-    #}
     scoreMap = {
         ' ': 127,
         'E': 127,
