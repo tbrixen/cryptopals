@@ -1,18 +1,16 @@
 #!/usr/bin/env python
 import sys, getopt
 import operator
-from lib.basic import hammingDistance, expandKeyAndXor, guessKeyForSingleByteXor, canReadNextBytes, readEveryXByte
+from lib.basic import hammingDistance, expandKeyAndXor, guessKeyForSingleByteXor, canReadNextBytes, readEveryXByte, englishScore
 from bitstring import BitArray, ConstBitStream, BitStream, Bits
 
 def break_cipher(input):
-    print "Starting to break"
-
     keySizes = guessKeySizes(input)
-    print keySizes
+
+    results = list()
 
     for keySize in keySizes:
         input.pos = 0
-        print "Trying keysize:", keySize
 
         key = BitStream()
         for pos in range(0, keySize):
@@ -20,14 +18,13 @@ def break_cipher(input):
             mostProbableKey = guessKeyForSingleByteXor(bytesToDecrypt)
             key.append(mostProbableKey)
 
-        print "Key is probably:", key.hex, key.bytes
-
         input.pos = 0
         key.pos = 0
         result = expandKeyAndXor(input, key)
-        print "Bytes"
-        print result.bytes
+        results.append((result, key))
 
+    results.sort(key=lambda elm: englishScore(elm[0]), reverse=True)
+    return results[0]
 
 def readFromOffsetAndWithDistance(offset, blockSize, input):
     input.pos = offset*8
@@ -84,7 +81,9 @@ def main(argv):
         base64encoded += line
     f.close()
 
-    break_cipher(ConstBitStream(bytes=base64encoded.decode('base64')))
+    result = break_cipher(ConstBitStream(bytes=base64encoded.decode('base64')))
+
+    print result[0].bytes
 
 if __name__ == "__main__":
     main(sys.argv[1:])
