@@ -25,10 +25,10 @@ if __name__ == "__main__":
     shouldProduce = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
     result = hexStringToBase64(source)
     if (result == shouldProduce):
-        print "win"
+        print("win")
     else:
-        print "Sorry, it did not match:"
-        print "Was: \t\t\t\t" + result
-        print "Should be: \t" + shouldProduce
+        print("Sorry, it did not match:")
+        print("Was: \t\t\t\t" + result)
+        print("Should be: \t" + shouldProduce)
 
 
