@@ -32,19 +32,19 @@ def readFromOffsetAndWithDistance(offset, blockSize, input):
 def guessKeySizes(input):
     normalizedDistances = list()
 
-    for F in range(2, 41):
-        keysize = F*8
+    for keysize in range(2, 41):
+        keysize_bits = keysize*8
         input.pos = 0
         running = 0
         number_of_blocks_to_read = 3
         for _ in range(0, number_of_blocks_to_read):
-            part1 = input.read(keysize)
-            part2 = input.read(keysize)
-            input.pos -= keysize
+            part1 = input.read(keysize_bits)
+            part2 = input.read(keysize_bits)
+            input.pos -= keysize_bits
             hd = hammingDistance(part1, part2)
             normalized = float(hd)
             running += normalized
-        normalizedDistances.append((F, float(running) / float(F * 3)))
+        normalizedDistances.append((keysize, float(running) / float(keysize * 3)))
 
     keysizesToTry = set()
     numberOfKeysToTry = 5
