@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import sys, getopt
-import operator
 from lib.basic import hammingDistance, expandKeyAndXor, guessKeyForSingleByteXor, canReadNextBytes, readEveryXByte, englishScore
 from bitstring import BitArray, ConstBitStream, BitStream, Bits
 
@@ -31,7 +30,7 @@ def readFromOffsetAndWithDistance(offset, blockSize, input):
     return readEveryXByte(input, blockSize)
 
 def guessKeySizes(input):
-    normalizedDistances = {}
+    normalizedDistances = list()
 
     for F in range(2, 41):
         keysize = F*8
@@ -45,18 +44,15 @@ def guessKeySizes(input):
             hd = hammingDistance(part1, part2)
             normalized = float(hd)
             running += normalized
-        normalizedDistances[F] = float(running) / float(F * 3)
+        normalizedDistances.append((F, float(running) / float(F * 3)))
 
     keysizesToTry = set()
     numberOfKeysToTry = 5
 
-    for i, key in enumerate(sorted(normalizedDistances.items(), key=operator.itemgetter(1))):
-        if i < numberOfKeysToTry:
-            keysizesToTry.add(key[0])
-        #print "%10s, %10d" % (key, i)
+    normalizedDistances.sort(key=lambda elm: elm[1])
 
     input.pos = 0
-    return keysizesToTry
+    return map((lambda x: x[0]), normalizedDistances[0: numberOfKeysToTry])
 
 def main(argv):
     inputfile=''
