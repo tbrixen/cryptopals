@@ -11,16 +11,12 @@ def expandKeyAndXor(data, key):
     data = BitStream(data)
     key = BitStream(key)
     key = expandKey(key, data.length)
-    res = BitStream()
-
-    while key.pos + 8 <= key.length:
-        res.append(xor(data.read(8), key.read(8)))
-
-    return res
+    return data ^ key
 
 def expandKey(key, length):
+    k = key.bytes
     atLeast = (length / len(key)) + 1
-    return (key*atLeast)[:length]
+    return (BitStream(bytes=k*atLeast))[:length]
 
 def canReadNextByte(data):
     return data.pos + 8 <= data.len
@@ -99,7 +95,7 @@ def englishScore(source):
 
 def guessKeyForSingleByteXor(encrypted):
     scoreMap = {}
-    for c in range(255):
+    for c in range(256):
         char = Bits(uint=c, length=8)
         decrypted = expandKeyAndXor(encrypted, char)
         score = englishScore(decrypted)

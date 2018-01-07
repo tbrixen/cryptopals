@@ -1,67 +1,58 @@
 #!/usr/bin/env python
 import sys, getopt
-from lib.basic import hammingDistance, expandKeyAndXor, guessKeyForSingleByteXor, canReadNextBytes, readEveryXByte
+from lib.basic import hammingDistance, expandKeyAndXor, guessKeyForSingleByteXor, canReadNextBytes, readEveryXByte, englishScore
 from bitstring import BitArray, ConstBitStream, BitStream, Bits
 
 def break_cipher(input):
-    print "Starting to break"
-
     keySizes = guessKeySizes(input)
-    print keySizes
 
-    #keySizes = {24}
+    results = list()
 
     for keySize in keySizes:
         input.pos = 0
-        print "Trying keysize:", keySize
 
         key = BitStream()
         for pos in range(0, keySize):
-            print "Guessing at pos", pos
             bytesToDecrypt = readFromOffsetAndWithDistance(pos, keySize, input)
             mostProbableKey = guessKeyForSingleByteXor(bytesToDecrypt)
             key.append(mostProbableKey)
 
-        print "Key is probably:", key.hex
-
         input.pos = 0
         key.pos = 0
         result = expandKeyAndXor(input, key)
-        print "Bytes"
-        print result.bytes
-        print "Hex"
-        print result.hex
+        results.append((result, key))
 
+    results.sort(key=lambda elm: englishScore(elm[0]), reverse=True)
+    return results[0]
 
 def readFromOffsetAndWithDistance(offset, blockSize, input):
     input.pos = offset*8
     return readEveryXByte(input, blockSize)
 
 def guessKeySizes(input):
-    normalizedDistances = {}
+    normalizedDistances = list()
 
-    for keysize in range(2,41):
+    for keysize in range(2, 41):
+        keysize_bits = keysize*8
         input.pos = 0
         running = 0
-        for _ in range(0,3):
-            part1 = input.read(keysize)
-            part2 = input.read(keysize)
+        number_of_blocks_to_read = 3
+        for _ in range(0, number_of_blocks_to_read):
+            part1 = input.read(keysize_bits)
+            part2 = input.read(keysize_bits)
+            input.pos -= keysize_bits
             hd = hammingDistance(part1, part2)
-            normalized = float(hd) / float(keysize)
-            #print "HD:", hd, "keysize", keysize, "normalized", normalized
+            normalized = float(hd)
             running += normalized
-        normalizedDistances[float(running)/float(3)] = keysize
+        normalizedDistances.append((keysize, float(running) / float(keysize * 3)))
 
     keysizesToTry = set()
     numberOfKeysToTry = 5
 
-    for i, key in enumerate(sorted(normalizedDistances.iterkeys())):
-        if i < numberOfKeysToTry:
-            keysizesToTry.add(normalizedDistances[key])
-        #print "%s, %s, %d" % (key, normalizedDistances[key], i)
+    normalizedDistances.sort(key=lambda elm: elm[1])
 
     input.pos = 0
-    return keysizesToTry
+    return map((lambda x: x[0]), normalizedDistances[0: numberOfKeysToTry])
 
 def main(argv):
     inputfile=''
@@ -86,7 +77,9 @@ def main(argv):
         base64encoded += line
     f.close()
 
-    break_cipher(ConstBitStream(bytes=base64encoded.decode('base64')))
+    result = break_cipher(ConstBitStream(bytes=base64encoded.decode('base64')))
+
+    print result[0].bytes
 
 if __name__ == "__main__":
     main(sys.argv[1:])
