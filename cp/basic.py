@@ -3,14 +3,13 @@ from collections import defaultdict
 def xor(a, b):
     if len(a) != len(b):
         raise BaseException("Cannot XOR bitstrings of unequal length. Lengths was %d and %d" % (len(a), len(b)))
-    return bytearray(map(lambda x: x[0]^x[1], zip(a, b)))
+    return bytearray([x ^ y for x, y in zip(a, b)])
 
 def expand_key_and_xor(data, key):
     key = expand_key(key, len(data))
     return xor(data, key)
 
 def expand_key(key, length):
-    atLeast = (length / len(key)) + 1
     return (key * length)[:length]
 
 #def hammingDistance(a, b):
