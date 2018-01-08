@@ -1,5 +1,7 @@
 .DS_Store
 *.swp
+*.swo
+*.swn
 *.pyc
-/.ropeproject/
 /**/.ropeproject/
+/**/__init__.py

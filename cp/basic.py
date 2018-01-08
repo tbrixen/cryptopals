@@ -1,30 +1,18 @@
+from collections import defaultdict
+
 def xor(a, b):
     if len(a) != len(b):
         raise BaseException("Cannot XOR bitstrings of unequal length. Lengths was %d and %d" % (len(a), len(b)))
     return bytearray(map(lambda x: x[0]^x[1], zip(a, b)))
 
-#def expandKeyAndXor(data, key):
-#    data = BitStream(data)
-#    key = BitStream(key)
-#    key = expandKey(key, data.length)
-#    return data ^ key
-#
-#def expandKey(key, length):
-#    k = key.bytes
-#    atLeast = (length / len(key)) + 1
-#    return (BitStream(bytes=k*atLeast))[:length]
-#
-#def canReadNextByte(data):
-#    return data.pos + 8 <= data.len
-#
-#def canReadNextBytes(data, nBytes):
-#    return data.pos + nBytes*8 <= data.len
-#
-#def countCharsIgnoreCase(source, char):
-#    a = source.bytes.count(char)
-#    b = source.bytes.count(char.swapcase())
-#    return a + b
-#
+def expand_key_and_xor(data, key):
+    key = expand_key(key, len(data))
+    return xor(data, key)
+
+def expand_key(key, length):
+    atLeast = (length / len(key)) + 1
+    return (key * length)[:length]
+
 #def hammingDistance(a, b):
 #    return (a ^ b).count(1)
 #
@@ -49,57 +37,63 @@ def xor(a, b):
 #
 #    return ConstBitStream(firstBytesOfEachBlock)
 #
-#def englishScore(source):
-#    # Chars taken from the first two groups from studi made by Beker and
-#    # Piper. The number being multiplied is the probability of it occurring in
-#    # an english text. e.g. 'e' has the probability of 0.127. This I concluded
-#    # that if I saw an 'e' there was a higher probability that if I saw an 'r'.
-#    # Also see https://en.wikipedia.org/wiki/Etaoin_shrdlu
-#    score = 0
-#    scoreMap = {
-#        ' ': 127,
-#        'E': 127,
-#        'T': 91,
-#        'A': 82,
-#        'O': 75,
-#        'I': 70,
-#        'N': 67,
-#        'S': 63,
-#        'H': 61,
-#        'R': 60,
-#        'D': 43,
-#        'L': 40,
-#        'U': 28,
-#        'M': 24,
-#        'W': 24,
-#        'F': 22,
-#        'Y': 20,
-#        'G': 20,
-#        'P': 19,
-#        'B': 15,
-#        'V': 10,
-#        'K': 8,
-#        'X': 2,
-#        'J': 2,
-#        'Q': 1
-#    }
-#
-#    for char, points in scoreMap.iteritems():
-#        score += countCharsIgnoreCase(source, char) * points
-#
-#    return score
-#
-#def guessKeyForSingleByteXor(encrypted):
-#    scoreMap = {}
-#    for c in range(256):
-#        char = Bits(uint=c, length=8)
-#        decrypted = expandKeyAndXor(encrypted, char)
-#        score = englishScore(decrypted)
-#        scoreMap[score] = char
-#
-#    highestScore = sorted(scoreMap, reverse=True)[0]
-#
-#    return scoreMap[highestScore]
+def english_score(source):
+    # Chars taken from the first two groups from studi made by Beker and
+    # Piper. The number being multiplied is the probability of it occurring in
+    # an english text. e.g. 'e' has the probability of 0.127. This I concluded
+    # that if I saw an 'e' there was a higher probability that if I saw an 'r'.
+    # Also see https://en.wikipedia.org/wiki/Etaoin_shrdlu
+    scores = {
+        ' ': 127,
+        'E': 127,
+        'T': 91,
+        'A': 82,
+        'O': 75,
+        'I': 70,
+        'N': 67,
+        'S': 63,
+        'H': 61,
+        'R': 60,
+        'D': 43,
+        'L': 40,
+        'U': 28,
+        'M': 24,
+        'W': 24,
+        'F': 22,
+        'Y': 20,
+        'G': 20,
+        'P': 19,
+        'B': 15,
+        'V': 10,
+        'K': 8,
+        'X': 2,
+        'J': 2,
+        'Q': 1
+    }
+    score = 0
+    score_map = defaultdict(int, **scores)
+
+    for char_point in source:
+        char = chr(char_point).upper()
+        score += score_map[char]
+
+    return score
+
+def guess_key_for_single_byte_xor(encrypted):
+    score_map = dict()
+    for c in range(256):
+        key_candidate = bytes([c])
+        decrypted = expand_key_and_xor(encrypted, key_candidate)
+        score = english_score(decrypted)
+        score_map[score] = key_candidate
+
+    highest_score = sorted(score_map, reverse=True)[0]
+
+    return score_map[highest_score]
+
+def break_single_key_xor(encrypted):
+    winningChar = guess_key_for_single_byte_xor(encrypted)
+    return expand_key_and_xor(encrypted, winningChar)
 #
 #def decrypt_aes_ecb(key, data):
 #    if key.length is not 128:

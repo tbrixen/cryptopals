@@ -1,5 +1,5 @@
 import unittest
-from basic import xor#, expandKey, expandKeyAndXor, countCharsIgnoreCase, guessKeyForSingleByteXor, hammingDistance, canReadNextByte, canReadNextBytes, readEveryXByte, decrypt_aes_ecb
+from basic import xor, expand_key, expand_key_and_xor, guess_key_for_single_byte_xor#, hammingDistance, canReadNextByte, canReadNextBytes, readEveryXByte, decrypt_aes_ecb
 
 class cryptopals_basic(unittest.TestCase):
 
@@ -7,24 +7,23 @@ class cryptopals_basic(unittest.TestCase):
         a = bytes.fromhex('1c0111001f010100061a024b53535009181c')
         b = bytes.fromhex('686974207468652062756c6c277320657965')
         res = bytes.fromhex('746865206b696420646f6e277420706c6179')
-        self.assertEquals(xor(a, b), res)
+        self.assertEqual(xor(a, b), res)
 
     def test_xor_equal_length(self):
         with self.assertRaisesRegex(BaseException, 'unequal length'):
             xor(bytes.fromhex("AA"), bytes.fromhex("BBAA"))
 
-    #def test_expand_key_of_single_bit(self):
-    #    result = expandKey(Bits('0b1'), 4)
-    #    self.assertEquals(result, Bits('0b1111'))
+    def test_expand_key_of_single_byte(self):
+        result = expand_key(bytes([9]), 3)
+        self.assertEqual(result, bytes.fromhex("090909"))
 
-    #def test_expand_key_of_multiple_bits(self):
-    #    result = expandKey(Bits('0b110'), 5)
-    #    self.assertEquals(result, Bits('0b11011'))
+    def test_expand_key_of_multiple_bytes(self):
+        result = expand_key(bytes.fromhex("AABB"), 3)
+        self.assertEqual(result, bytes.fromhex("AABBAA"))
 
-    #def test_expand_key_and_xor(self):
-    #    result = expandKeyAndXor(Bits('0b11001100'), Bits('0b110'))
-    #    self.assertEquals(result, Bits('0b00010111'))
-    #    self.assertIs(result.pos, 0)
+    def test_expand_key_and_xor(self):
+        result = expand_key_and_xor(bytes.fromhex("0102"), bytes([3]))
+        self.assertEqual(result, bytes.fromhex("0201"))
 
 #    def test_count_chars_ignore_case_in_string_upper_case(self):
 #        haystack = Bits(bytes="anadsgGfAbf")
@@ -51,15 +50,16 @@ class cryptopals_basic(unittest.TestCase):
 #        result = countCharsIgnoreCase(haystack, 'a');
 #        self.assertIs(result, 2)
 #
-#    def test_guess_key_for_single_byte_xor(self):
-#        text = Bits(bytes='Hello this is some english text')
-#        result = guessKeyForSingleByteXor(text)
-#        self.assertIs(result.int, 0)
-#
-#    def test_guess_key_for_single_byte_xor_shifted(self):
-#        text = Bits(bytes='Hello this is some english text')
-#        result = guessKeyForSingleByteXor(expandKeyAndXor(text, Bits(hex="10")))
-#        self.assertIs(result.int, 16)
+    def test_guess_key_for_single_byte_xor(self):
+        text = b'Hello this is some english text'
+        result = guess_key_for_single_byte_xor(text)
+        self.assertEqual(result, bytes([0]))
+
+    def test_guess_key_for_single_byte_xor_shifted(self):
+        text = b'Hello this is some english text'
+        ciphertext = expand_key_and_xor(text, bytes.fromhex("10"))
+        result = guess_key_for_single_byte_xor(ciphertext)
+        self.assertEqual(result, bytes([16]))
 #
 #    def test_hamming_distance(self):
 #        a = BitStream(bytes="this is a test")
