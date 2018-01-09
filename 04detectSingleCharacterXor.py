@@ -1,25 +1,26 @@
 #!/usr/bin/env python
+from cp.basic import break_single_key_xor, english_score
 
-from lib.basic import expandKeyAndXor, guessKeyForSingleByteXor, englishScore
-from bitstring import Bits, BitArray, BitStream
-
-if __name__ == "__main__":
-    bestScore = 0
-    winningChar = 0
-    probablyTheString = ""
+def main():
+    lines = list()
     with open ('04detectSingleCharacterXor.txt') as f:
         for line in f:
-            print "Trying: " + line
-            for c in range(255):
-                encrypted = BitStream(hex=line)
-                key = Bits(uint=c, length=8)
-                decrypted = expandKeyAndXor(encrypted, key)
-                curr_score = englishScore(decrypted)
-                if curr_score > bestScore:
-                    bestScore = curr_score
-                    winningChar = c
-                    probablyTheString = line
+            lines.append(bytes.fromhex(line.strip()))
 
-    encrypted = BitStream(hex=probablyTheString)
-    print "Maybe this is the solution using char %d, of the string %s: " % (winningChar, probablyTheString)
-    print expandKeyAndXor(encrypted, Bits(uint=winningChar, length=8)).bytes
+    lines.sort(key=lambda x: english_score(x), reverse=True)
+    ciphertext = lines[0]
+
+    result = break_single_key_xor(ciphertext)
+
+    output_message = """SET 01 CHALLENGE 04: Detect single-character XOR
+    Hex source: {}
+    Key (hex):  {}
+    Decrypted:  {}"""
+
+    print(output_message.format(\
+        ciphertext.hex(), \
+        result['key'].hex(), \
+        result['plaintext'].decode("UTF-8")))
+
+if __name__ == "__main__":
+    main()
