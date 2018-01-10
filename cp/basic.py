@@ -92,7 +92,8 @@ def guess_key_for_single_byte_xor(encrypted):
 
 def break_single_key_xor(encrypted):
     winningChar = guess_key_for_single_byte_xor(encrypted)
-    return expand_key_and_xor(encrypted, winningChar)
+    plaintext = expand_key_and_xor(encrypted, winningChar)
+    return {'key': winningChar, 'plaintext': plaintext}
 #
 #def decrypt_aes_ecb(key, data):
 #    if key.length is not 128:

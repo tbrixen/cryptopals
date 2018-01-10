@@ -25,6 +25,15 @@ class cryptopals_basic(unittest.TestCase):
         result = expand_key_and_xor(bytes.fromhex("0102"), bytes([3]))
         self.assertEqual(result, bytes.fromhex("0201"))
 
+    def test_expand_key_and_xor_challenge05(self):
+        plaintext = ("Burning 'em, if you ain't quick and nimble\n"
+                      "I go crazy when I hear a cymbal"
+                    ).encode()
+        key = b"ICE"
+        expected = bytes.fromhex("0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f")
+        actual = expand_key_and_xor(plaintext, key)
+        self.assertEqual(actual, expected)
+
 #    def test_count_chars_ignore_case_in_string_upper_case(self):
 #        haystack = Bits(bytes="anadsgGfAbf")
 #        result = countCharsIgnoreCase(haystack, 'A');
