@@ -12,9 +12,14 @@ def expand_key_and_xor(data, key):
 def expand_key(key, length):
     return (key * length)[:length]
 
-#def hammingDistance(a, b):
-#    return (a ^ b).count(1)
-#
+def hamming_distance(a, b):
+    c = xor(a, b)
+    return binary(c).count('1')
+
+def binary(input):
+    return bin(int(input.hex(), 16))[2:]
+
+
 #def readEveryXByte(data, x):
 #    result = BitStream()
 #    if not canReadNextByte(data):
@@ -94,7 +99,7 @@ def break_single_key_xor(encrypted):
     winningChar = guess_key_for_single_byte_xor(encrypted)
     plaintext = expand_key_and_xor(encrypted, winningChar)
     return {'key': winningChar, 'plaintext': plaintext}
-#
+
 #def decrypt_aes_ecb(key, data):
 #    if key.length is not 128:
 #        raise ValueError("Key is not 128 bits. Input key size: %d bits" % key.length)

@@ -1,5 +1,5 @@
 import unittest
-from basic import xor, expand_key, expand_key_and_xor, guess_key_for_single_byte_xor#, hammingDistance, canReadNextByte, canReadNextBytes, readEveryXByte, decrypt_aes_ecb
+from basic import xor, expand_key, expand_key_and_xor, guess_key_for_single_byte_xor, hamming_distance#, canReadNextByte, canReadNextBytes, readEveryXByte, decrypt_aes_ecb
 
 class cryptopals_basic(unittest.TestCase):
 
@@ -69,12 +69,12 @@ class cryptopals_basic(unittest.TestCase):
         ciphertext = expand_key_and_xor(text, bytes.fromhex("10"))
         result = guess_key_for_single_byte_xor(ciphertext)
         self.assertEqual(result, bytes([16]))
-#
-#    def test_hamming_distance(self):
-#        a = BitStream(bytes="this is a test")
-#        b = BitStream(bytes="wokka wokka!!!")
-#        result = hammingDistance(a, b)
-#        self.assertIs(result, 37)
+
+    def test_hamming_distance(self):
+        a = b"this is a test"
+        b = b"wokka wokka!!!"
+        result = hamming_distance(a, b)
+        self.assertIs(result, 37)
 #
 #    def test_can_read_next_byte(self):
 #        data = BitStream(hex='00')
