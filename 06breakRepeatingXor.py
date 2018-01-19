@@ -78,7 +78,15 @@ def main(argv):
 
     result = break_cipher(base64.b64decode(base64encoded))
 
-    print(result['plaintext'])
+    output_message = """SET 01 CHALLENGE 06: Break repeating-charecter XOR
+    Key (hex): {}
+    Key      : {}
+    Plaintext: {}"""
+
+    print(output_message.format(\
+        result['key'].hex(),
+        result['key'].decode("UTF-8"),
+        result['plaintext'].decode("UTF-8")))
 
 if __name__ == "__main__":
     main(sys.argv[1:])
