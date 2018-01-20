@@ -1,5 +1,5 @@
 import unittest
-from basic import xor, expand_key, expand_key_and_xor, guess_key_for_single_byte_xor, hamming_distance#, canReadNextByte, canReadNextBytes, readEveryXByte, decrypt_aes_ecb
+from basic import xor, expand_key, expand_key_and_xor, guess_key_for_single_byte_xor, hamming_distance, decrypt_aes_ecb
 
 class cryptopals_basic(unittest.TestCase):
 
@@ -129,24 +129,24 @@ class cryptopals_basic(unittest.TestCase):
 #        result = readEveryXByte(data, 2)
 #        self.assertEquals(result, BitStream(hex="0103"))
 #
-#    def test_decrypt_aes_ecb_key_not_corrent_length(self):
-#        key = BitStream(hex="01020304")
-#        data = BitStream(hex="01020304")
-#        with self.assertRaisesRegexp(ValueError, 'Key is not 128 bits'):
-#            decrypt_aes_ecb(key, data)
-#
-#    def test_decrypt_aes_ecb_data_not_corrent_length(self):
-#        key = BitStream(hex="01020304010203040102030401020304")
-#        data = BitStream(hex="01020304")
-#        with self.assertRaisesRegexp(ValueError, 'Data is not a multiple of 16 bytes'):
-#            decrypt_aes_ecb(key, data)
-#
-#    def test_decrypt_aes_ecb_(self):
-#        key = BitStream(bytes="YELLOW SUBMARINE")
-#        data = BitStream(hex="091230aade3eb330dbaa4358f88d2a6c37b72d0cf4c22c344aec4142d00ce530")
-#        result = decrypt_aes_ecb(key, data)
-#        self.assertEquals(result.bytes, BitStream(bytes="I'm back and I'm ringin' the bel").bytes)
-#
+    def test_decrypt_aes_ecb_key_not_corrent_length(self):
+        key = bytes.fromhex("01020304")
+        data = bytes.fromhex("01020304")
+        with self.assertRaisesRegex(ValueError, 'Key is not 16 bytes'):
+            decrypt_aes_ecb(key, data)
+
+    def test_decrypt_aes_ecb_data_not_corrent_length(self):
+        key = bytes.fromhex("01020304010203040102030401020304")
+        data = bytes.fromhex("01020304")
+        with self.assertRaisesRegex(ValueError, 'Data is not a multiple of 16 bytes'):
+            decrypt_aes_ecb(key, data)
+
+    def test_decrypt_aes_ecb_(self):
+        key =  b"YELLOW SUBMARINE"
+        data = bytes.fromhex("091230aade3eb330dbaa4358f88d2a6c37b72d0cf4c22c344aec4142d00ce530")
+        result = decrypt_aes_ecb(key, data)
+        self.assertEqual(result, b"I'm back and I'm ringin' the bel")
+
 
 
 
