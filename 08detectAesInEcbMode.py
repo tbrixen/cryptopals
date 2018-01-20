@@ -1,15 +1,19 @@
-from lib.basic import find_most_probable_ecb_encrypted
-from bitstring import ConstBitStream
+from cp.basic import find_most_probable_ecb_encrypted
 
 def main():
     data = list()
     f = open("08detectAesInEcbMode.txt")
     for line in f.read().split('\n'):
-        data.append(ConstBitStream(hex=line))
+        data.append(bytes.fromhex(line))
     f.close()
 
-    mostProbable = find_most_probable_ecb_encrypted(data)
-    print mostProbable.hex
+    most_probable = find_most_probable_ecb_encrypted(data)
+
+    output_message = """SET 01 CHALLENGE 08: Detect AES in ECB mode
+    Most probable ECB encrypted ciphertext (hex):    {}"""
+
+    print(output_message.format(\
+        most_probable.hex()))
 
 if __name__ == "__main__":
     main()
