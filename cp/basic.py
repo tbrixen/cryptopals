@@ -1,4 +1,5 @@
 from collections import defaultdict
+from Crypto.Cipher import AES
 
 def xor(a, b):
     if len(a) != len(b):
@@ -100,22 +101,22 @@ def break_single_key_xor(encrypted):
     plaintext = expand_key_and_xor(encrypted, winningChar)
     return {'key': winningChar, 'plaintext': plaintext}
 
-#def decrypt_aes_ecb(key, data):
-#    if key.length is not 128:
-#        raise ValueError("Key is not 128 bits. Input key size: %d bits" % key.length)
-#    if data.length % 128:
-#        raise ValueError("Data is not a multiple of 16 bytes. Data is %d bits", data.length)
-#
-#    cipher = AES.new(key.bytes, AES.MODE_ECB)
-#
-#    result = BitStream()
-#    while canReadNextBytes(data, 16):
-#        nextBytes = data.read(16*8)
-#        decrypted = cipher.decrypt(nextBytes.bytes)
-#        result += Bits(bytes=decrypted)
-#
-#    return result
-#
+def decrypt_aes_ecb(key, data):
+    if len(key) is not 16:
+        raise ValueError("Key is not 16 bytes. Input key size: %d bytes" % len(key))
+    if len(data) % 16:
+        raise ValueError("Data is not a multiple of 16 bytes. Data is %d bytes", len(data))
+
+    cipher = AES.new(key, AES.MODE_ECB)
+
+    result = bytearray()
+    for block_index in range(0, len(data), 16):
+        next_bytes = data[block_index : block_index + 16]
+        decrypted = cipher.decrypt(next_bytes)
+        result.extend(decrypted)
+
+    return result
+
 #def ecb_score(bitstring):
 #    """ From bitstring (ConstBitStream) compute a score of the probablity of it
 #    being ecb encrypted with blocks of size 128 """

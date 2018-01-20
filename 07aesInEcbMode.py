@@ -1,8 +1,8 @@
-from lib.basic import canReadNextBytes, decrypt_aes_ecb
-from bitstring import ConstBitStream
+from cp.basic import decrypt_aes_ecb
+import base64
 
 def main():
-    key = ConstBitStream(bytes="YELLOW SUBMARINE")
+    key = b"YELLOW SUBMARINE"
 
     base64encoded = ""
     f = open("07aesInECBmode.encrypted")
@@ -10,9 +10,13 @@ def main():
         base64encoded += line
     f.close()
 
-    result = decrypt_aes_ecb(key, ConstBitStream(bytes=base64encoded.decode('base64')))
+    result = decrypt_aes_ecb(key, base64.b64decode(base64encoded))
 
-    print result.bytes
+    output_message = """SET 01 CHALLENGE 07: AES in ECB mode
+    Plaintext:       {}"""
+
+    print(output_message.format( \
+        result.decode()))
 
 if __name__ == "__main__":
     main()
