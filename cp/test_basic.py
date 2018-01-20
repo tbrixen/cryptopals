@@ -34,31 +34,6 @@ class cryptopals_basic(unittest.TestCase):
         actual = expand_key_and_xor(plaintext, key)
         self.assertEqual(actual, expected)
 
-#    def test_count_chars_ignore_case_in_string_upper_case(self):
-#        haystack = Bits(bytes="anadsgGfAbf")
-#        result = countCharsIgnoreCase(haystack, 'A');
-#        self.assertIs(result, 3)
-#
-#    def test_count_chars_ignore_case_in_string_lower_case(self):
-#        haystack = Bits(bytes="anadsgGfAbf")
-#        result = countCharsIgnoreCase(haystack, 'a');
-#        self.assertIs(result, 3)
-#
-#    def test_count_chars_ignore_case_in_string_no_match(self):
-#        haystack = Bits(bytes="aaaa")
-#        result = countCharsIgnoreCase(haystack, 'w');
-#        self.assertIs(result, 0)
-#
-#    def test_count_chars_ignore_case_in_string_without_printable_char(self):
-#        haystack = Bits(hex="0x0010181f")
-#        result = countCharsIgnoreCase(haystack, 'a');
-#        self.assertIs(result, 0)
-#
-#    def test_count_chars_ignore_case_in_string_mixed_printable_char(self):
-#        haystack = Bits(hex="0x00611018411f")
-#        result = countCharsIgnoreCase(haystack, 'a');
-#        self.assertIs(result, 2)
-#
     def test_guess_key_for_single_byte_xor(self):
         text = b'Hello this is some english text'
         result = guess_key_for_single_byte_xor(text)
@@ -75,60 +50,7 @@ class cryptopals_basic(unittest.TestCase):
         b = b"wokka wokka!!!"
         result = hamming_distance(a, b)
         self.assertIs(result, 37)
-#
-#    def test_can_read_next_byte(self):
-#        data = BitStream(hex='00')
-#        self.assertTrue(canReadNextByte(data))
-#
-#    def test_can_read_next_byte_one_off(self):
-#        data = BitStream(hex='00')
-#        data.pos = 1
-#        self.assertFalse(canReadNextByte(data))
-#
-#    def test_can_read_next_byte_on_empty_stream(self):
-#        data = BitStream()
-#        self.assertFalse(canReadNextByte(data))
-#
-#    def test_can_read_next_zero_bytes(self):
-#        data = BitStream()
-#        self.assertTrue(canReadNextBytes(data, 0))
-#
-#    def test_can_read_next_single_byte(self):
-#        data = BitStream(hex='41')
-#        self.assertTrue(canReadNextBytes(data, 1))
-#
-#    def test_can_read_next_single_byte_fails(self):
-#        data = BitStream()
-#        self.assertFalse(canReadNextBytes(data, 1))
-#
-#    def test_can_read_next_multiple_byte_fails(self):
-#        data = BitStream(hex='41')
-#        self.assertFalse(canReadNextBytes(data, 2))
-#
-#    def test_can_read_next_multiple_byte(self):
-#        data = BitStream(hex='4142')
-#        self.assertTrue(canReadNextBytes(data, 2))
-#
-#    def test_can_read_next_multiple_byte_off_by_one(self):
-#        data = BitStream(hex='4142')
-#        data.pos = 1
-#        self.assertFalse(canReadNextBytes(data, 2))
-#
-#    def test_read_every_x_bytes_of_empty_source(self):
-#        data = BitStream()
-#        result = readEveryXByte(data, 1)
-#        self.assertIs(result.len, 0)
-#
-#    def test_read_every_1_bytes(self):
-#        data = BitStream(hex="010203")
-#        result = readEveryXByte(data, 1)
-#        self.assertEquals(result, BitStream(hex="010203"))
-#
-#    def test_read_every_2_bytes(self):
-#        data = BitStream(hex="010203")
-#        result = readEveryXByte(data, 2)
-#        self.assertEquals(result, BitStream(hex="0103"))
-#
+
     def test_decrypt_aes_ecb_key_not_corrent_length(self):
         key = bytes.fromhex("01020304")
         data = bytes.fromhex("01020304")
@@ -146,9 +68,6 @@ class cryptopals_basic(unittest.TestCase):
         data = bytes.fromhex("091230aade3eb330dbaa4358f88d2a6c37b72d0cf4c22c344aec4142d00ce530")
         result = decrypt_aes_ecb(key, data)
         self.assertEqual(result, b"I'm back and I'm ringin' the bel")
-
-
-
 
 if __name__ == '__main__':
     unittest.main()

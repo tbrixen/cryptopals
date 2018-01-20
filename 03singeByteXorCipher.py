@@ -6,7 +6,11 @@ if __name__ == "__main__":
     result = break_single_key_xor(bytes.fromhex(encrypted))
 
     output_message = """SET 01 CHALLENGE 03: Single-byte XOR Cipher
-    Hex source:  {}
-    Result:      {}"""
+    Encrypted (Hex):  {}
+    Key (hex):        {}
+    Decrypted:        {}"""
 
-    print(output_message.format(encrypted, result))
+    print(output_message.format(
+        encrypted, 
+        result['key'].hex(),
+        result['plaintext'].decode()))

@@ -13,14 +13,14 @@ def main():
     result = break_single_key_xor(ciphertext)
 
     output_message = """SET 01 CHALLENGE 04: Detect single-character XOR
-    Hex source: {}
-    Key (hex):  {}
-    Decrypted:  {}"""
+    Encrypted (hex): {}
+    Key (hex):       {}
+    Decrypted:       {}"""
 
     print(output_message.format(\
         ciphertext.hex(), \
         result['key'].hex(), \
-        result['plaintext'].decode("UTF-8")))
+        result['plaintext'].decode()))
 
 if __name__ == "__main__":
     main()

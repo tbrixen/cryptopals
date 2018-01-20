@@ -20,28 +20,6 @@ def hamming_distance(a, b):
 def binary(input):
     return bin(int(input.hex(), 16))[2:]
 
-
-#def readEveryXByte(data, x):
-#    result = BitStream()
-#    if not canReadNextByte(data):
-#        return result
-#
-#    result.append(data.read(8))
-#    while canReadNextBytes(data, x):
-#        data.read((x-1)*8)
-#        result.append(data.read(8))
-#
-#    return result
-#
-#def readFromOffsetAndWithDistance(offset, blockSize, input):
-#    input.pos = offset*8
-#    firstBytesOfEachBlock = BitArray()
-#    while canReadNextBytes(input, blockSize):
-#        firstByteOfBlock = input.read(blockSize*8).read(8)
-#        firstBytesOfEachBlock.append(firstByteOfBlock)
-#
-#    return ConstBitStream(firstBytesOfEachBlock)
-#
 def english_score(source):
     # Chars taken from the first two groups from studi made by Beker and
     # Piper. The number being multiplied is the probability of it occurring in
